@@ -33,26 +33,23 @@ const App = () => {
 
   const handleAddTodo = (text) => setTodoData((prev) => [...prev, createTodoItem(text)]);
 
-  const onToggleDone = (id) => {
+  const toggleProperty = (id, property) => {
     setTodoData((prev) => {
       prev.map((item) => {
         if (item.id === id) {
-          item.done = !item.done;
+          item[property] = !item[property];
         }
       });
       return [...prev];
     });
   };
 
+  const onToggleDone = (id) => {
+    toggleProperty(id, 'done');
+  };
+
   const onToggleImportant = (id) => {
-    setTodoData((prev) => {
-      prev.map((item) => {
-        if (item.id === id) {
-          item.important = !item.important;
-        }
-      });
-      return [...prev];
-    });
+    toggleProperty(id, 'important');
   };
 
   return (
