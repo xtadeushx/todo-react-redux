@@ -8,7 +8,6 @@ import ItemAddForm from '../item-add-form';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-
 const App = () => {
   const createTodoItem = (label) => {
     return {
@@ -29,18 +28,14 @@ const App = () => {
     });
   };
 
-let todoLength = todoData.length;
-let done = todoData.map(el=> Number(el.done)).reduce((prev,cur)=> prev + cur)
-let toDo = todoLength - done;
-console.log('todoLength', todoLength);
-console.log('done', done);
-console.log('toDo', toDo);
+  let done = todoData.filter((el) => el.done).length;
+  let toDo = todoData.length - done;
 
   const handleAddTodo = (text) => setTodoData((prev) => [...prev, createTodoItem(text)]);
 
   const onToggleDone = (id) => {
     setTodoData((prev) => {
-       prev.map((item) => {
+      prev.map((item) => {
         if (item.id === id) {
           item.done = !item.done;
         }
@@ -51,7 +46,7 @@ console.log('toDo', toDo);
 
   const onToggleImportant = (id) => {
     setTodoData((prev) => {
-       prev.map((item) => {
+      prev.map((item) => {
         if (item.id === id) {
           item.important = !item.important;
         }
