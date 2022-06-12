@@ -6,7 +6,7 @@ import './todo-list.css';
 const TodoList = ({ todos, onDelete, onToggleDone, onToggleImportant }) => {
   const elements = todos.map((todo) => {
     return (
-      <li key={todo.id} className="list-group-item">
+      <li key={uuidv4()} className="list-group-item">
     
         <TodoListItem  {...todo} onDelete={() => onDelete(todo.id)}  onToggleImportant={onToggleImportant} onToggleDone={onToggleDone}/>
       </li>

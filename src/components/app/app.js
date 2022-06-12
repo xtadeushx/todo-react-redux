@@ -6,15 +6,16 @@ import ItemStatusFilter from '../item-status-filter';
 import './app.css';
 import ItemAddForm from '../item-add-form';
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const App = () => {
-  let maxId = 100;
   const createTodoItem = (label) => {
     return {
       label,
       important: false,
       done: false,
-      id: maxId++,
+      id: uuidv4(),
     };
   };
   const [todoData, setTodoData] = useState([
@@ -22,23 +23,24 @@ const App = () => {
     createTodoItem('Create awakes app'),
     createTodoItem('Have a lunch'),
   ]);
-  console.log(todoData);
   const handleDeleteTodo = (id) => {
     setTodoData((prev) => {
-     return prev.filter((item) => item.id !== id);
-      
+      return prev.filter((item) => item.id !== id);
     });
   };
 
-  const handleAddTodo = () =>
-    setTodoData(({ todoData }) => {
-      let newItem = createTodoItem('some todo');
-      return { todoData: [...todoData, newItem] };
-    });
+let todoLength = todoData.length;
+let done = todoData.map(el=> Number(el.done)).reduce((prev,cur)=> prev + cur)
+let toDo = todoLength - done;
+console.log('todoLength', todoLength);
+console.log('done', done);
+console.log('toDo', toDo);
+
+  const handleAddTodo = (text) => setTodoData((prev) => [...prev, createTodoItem(text)]);
 
   const onToggleDone = (id) => {
     setTodoData((prev) => {
-      prev.map((item) => {
+       prev.map((item) => {
         if (item.id === id) {
           item.done = !item.done;
         }
@@ -49,7 +51,7 @@ const App = () => {
 
   const onToggleImportant = (id) => {
     setTodoData((prev) => {
-      prev.map((item) => {
+       prev.map((item) => {
         if (item.id === id) {
           item.important = !item.important;
         }
@@ -60,7 +62,7 @@ const App = () => {
 
   return (
     <div className="todo-app">
-      <AppHeader toDo={1} done={3} />
+      <AppHeader toDo={toDo} done={done} />
       <div className="top-panel d-flex">
         <SearchPanel />
         <ItemStatusFilter />
