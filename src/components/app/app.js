@@ -52,12 +52,30 @@ const App = () => {
     toggleProperty(id, 'important');
   };
 
+  const handleFilterTodo = (text) => {
+    setTodoData((prev) => {
+      return prev.filter((item) => item.label.toLowerCase().includes(text));
+    });
+  };
+
+  const handleFilterDoneTodo = () => setTodoData((prev) => prev.filter((item) => item.done));
+  const handleFilterActiveTodo = () => setTodoData((prev) => prev.filter((item) => !item.done));
+  const handleFilterAllTodo = () =>
+  setTodoData([
+      createTodoItem('Drink coffee'),
+      createTodoItem('Create awakes app'),
+      createTodoItem('Have a lunch'),
+    ]);
   return (
     <div className="todo-app">
       <AppHeader toDo={toDo} done={done} />
       <div className="top-panel d-flex">
-        <SearchPanel />
-        <ItemStatusFilter />
+        <SearchPanel handleFilterTodo={handleFilterTodo} />
+        <ItemStatusFilter
+          handleFilterActiveTodo={handleFilterActiveTodo}
+          handleFilterDoneTodo={handleFilterDoneTodo}
+          handleFilterAllTodo={handleFilterAllTodo}
+        />
       </div>
 
       <TodoList
