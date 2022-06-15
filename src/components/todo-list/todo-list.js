@@ -8,7 +8,7 @@ const TodoList = ({ todos, onDelete, onToggleDone, onToggleImportant }) => {
     return (
       <li key={uuidv4()} className="list-group-item">
     
-        <TodoListItem  {...todo} onDelete={() => onDelete(todo.id)}  onToggleImportant={onToggleImportant} onToggleDone={onToggleDone}/>
+        <TodoListItem  {...todo} onDelete={onDelete}  onToggleImportant={onToggleImportant} onToggleDone={onToggleDone}/>
       </li>
     );
   });
