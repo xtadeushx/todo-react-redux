@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import AppHeader from '../app-header';
 import SearchPanel from '../search-panel';
 import TodoList from '../todo-list';
@@ -7,39 +7,63 @@ import './app.css';
 import ItemAddForm from '../item-add-form';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+import Alert from '../alert/Alert';
 
 const App = () => {
-  const createTodoItem = (label) => {
+  const URL = `https://jsonplaceholder.typicode.com/todos`;
+  let numberOfTodos = 5;
+
+  const createTodoItem = (title) => {
     return {
-      label,
+      title,
       important: false,
-      done: false,
+      completed: false,
       id: uuidv4(),
     };
   };
   // State
-  const [todoData, setTodoData] = useState([
-    createTodoItem('Drink coffee'),
-    createTodoItem('Create awakes app'),
-    createTodoItem('Have a lunch'),
-  ]);
+  const [todoData, setTodoData] = useState([]);
   const [term, setTerm] = useState('');
   const [filter, setFilter] = useState('active');
+  const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    setIsLoading(true);
+    fechDataFromJSONPlaceholder(numberOfTodos);
+  }, []);
 
-  
+  const fechDataFromJSONPlaceholder = (number) => {
+    try {
+      axios.get(`${URL}?_limit=${number}`).then((response) => {
+        setTimeout(() => {
+          setTodoData(response.data);
+        }, 3000);
+        setTodoData(response.data);
+        setIsLoading(false);
+      });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
   const handleDeleteTodo = (id) => {
     console.log('handleDeleteTodo');
     setTodoData((prev) => {
       return prev.filter((item) => item.id !== id);
     });
-
   };
 
-  let done = todoData.filter((el) => el.done).length;
-  let toDo = todoData.length - done;
+  let completed = todoData ? todoData.filter((el) => el.completed).length : 0;
+  let toDo = todoData.length - completed;
 
-  const handleAddTodo = (text) => setTodoData((prev) => [...prev, createTodoItem(text)]);
+  const handleAddTodo = (text) => {
+    console.log(text);
+    if (text === '') {
+     alert('Please enter a text');
+     return 
+    }
+    setTodoData((prev) => [...prev, createTodoItem(text)]);
+  };
 
   const toggleProperty = (id, property) => {
     setTodoData((prev) => {
@@ -53,30 +77,28 @@ const App = () => {
   };
 
   const onToggleDone = (id) => {
-    toggleProperty(id, 'done');
+    toggleProperty(id, 'completed');
   };
 
   const onToggleImportant = (id) => {
     toggleProperty(id, 'important');
   };
 
-  const search = 
-    (items, term) => {
-      if (term === '') {
-        return items;
-      }
-      return items.filter((item) => item.label.toLowerCase().includes(term));
+  const search = (items, term) => {
+    if (term === '') {
+      return items;
     }
-  
+    return items.filter((item) => item.title.toLowerCase().includes(term));
+  };
 
   const handleFilter = (items, filter) => {
     switch (filter) {
       case 'all':
         return items;
-      case 'done':
-        return items.filter((item) => item.done);
+      case 'completed':
+        return items.filter((item) => item.completed);
       case 'active':
-        return items.filter((item) => !item.done);
+        return items.filter((item) => !item.completed);
       default:
         return items;
     }
@@ -84,25 +106,37 @@ const App = () => {
 
   const visibleTodoData = handleFilter(search(todoData, term), filter);
 
-
   const onSearchChanges = (term) => setTerm(term);
 
   const onFilterChanges = (filter) => setFilter(filter);
-
+  let style = {
+    color: 'black',
+    fontSize: '20px',
+    fontWeight: 'bold',
+  };
   return (
     <div className="todo-app">
-      <AppHeader toDo={toDo} done={done} />
+      <AppHeader toDo={toDo} completed={completed} />
       <div className="top-panel d-flex">
-        <SearchPanel onSearchChanges={onSearchChanges} />
-        <ItemStatusFilter onFilterChanges={onFilterChanges} />
+        <SearchPanel onSearchChanges={onSearchChanges} isLoading={isLoading} />
+        <ItemStatusFilter isLoading={isLoading} onFilterChanges={onFilterChanges} />
       </div>
-
-      <TodoList
-        todos={visibleTodoData}
-        onDelete={(id) => handleDeleteTodo(id)}
-        onToggleDone={onToggleDone}
-        onToggleImportant={onToggleImportant}
-      />
+      {isLoading ? (
+        <p style={style}>Loading...</p>
+      ) : todoData.length > 0 ? (
+        <TodoList
+          todos={visibleTodoData}
+          onDelete={(id) => handleDeleteTodo(id)}
+          onToggleDone={onToggleDone}
+          onToggleImportant={onToggleImportant}
+        />
+      ) : (
+        <p style={style}>
+          You complied all for today.{' '}
+          <span style={{ color: 'tomato', fontSize: '20px' }}> Good job</span>
+        </p>
+      )}
+      {console.log(todoData.length)}
       <ItemAddForm onItemAdded={handleAddTodo} />
     </div>
   );

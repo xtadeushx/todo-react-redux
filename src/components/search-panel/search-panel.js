@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 
 import './search-panel.css';
 
-const SearchPanel = ({ onSearchChanges }) => {
+const SearchPanel = ({ onSearchChanges,isLoading }) => {
   const [value, setValue] = useState();
   const inputRef = useRef();
 
@@ -13,7 +13,7 @@ const SearchPanel = ({ onSearchChanges }) => {
 
  
   return (
-     <input  
+     <input  disabled={isLoading}
     ref={inputRef}
       type="text"
       className="form-control search-input d-flex w-100"
