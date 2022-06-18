@@ -20,6 +20,7 @@ const App = () => {
       important: false,
       completed: false,
       id: uuidv4(),
+      date : new Date().getMinutes() + ':' +  new Date().getSeconds(),
     };
   };
   // State
@@ -57,12 +58,21 @@ const App = () => {
   let toDo = todoData.length - completed;
 
   const handleAddTodo = (text) => {
-    console.log(text);
-    if (text === '') {
-     alert('Please enter a text');
-     return 
+    if (typeof text === 'string') {
+      if (text === '') {
+        alert('Please enter a text');
+        setTodoData(todoData);
+      }
+      let titleTodosArr = todoData.filter((todo) => todo.title === text);
+      if (titleTodosArr.length > 0) {
+        alert('You can not add the same todo');
+        setTodoData(todoData);
+      } else {
+        setTodoData((prev) => [...prev, createTodoItem(text)]);
+      }
+    }else{
+      alert('Wrong type of data. Please select one of the following data')
     }
-    setTodoData((prev) => [...prev, createTodoItem(text)]);
   };
 
   const toggleProperty = (id, property) => {
@@ -136,7 +146,6 @@ const App = () => {
           <span style={{ color: 'tomato', fontSize: '20px' }}> Good job</span>
         </p>
       )}
-      {console.log(todoData.length)}
       <ItemAddForm onItemAdded={handleAddTodo} />
     </div>
   );
